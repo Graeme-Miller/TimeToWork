@@ -1,14 +1,12 @@
 console.log("Heyo World!");
 
 var syncRun = false;
-var data = [];
+var data = {};
 
-var fromSelected = ""
-var toSelected = ""
 
 function clearData()  {
 	chrome.storage.sync.clear();
-	data = [];
+	data = {};
 	render();
 }
 
@@ -19,17 +17,21 @@ function render(){
 	    table.deleteRow(i);
 	}
 
+	console.log("Render Data",data)
 
-	data[fromSelected][toSelected].forEach(function(i){
-		var row = table.insertRow(1);
+	for(var from in data){
+			for(var to in data[from]){
+				var row = table.insertRow(1);
 
-		var cell1 = row.insertCell(0);
-		var cell2 = row.insertCell(1);
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				var cell3 = row.insertCell(2);
 
-		cell1.innerHTML = i.date;
-		cell2.innerHTML = i.minsToDest;
-
-	});
+				cell1.innerHTML = from;
+				cell2.innerHTML = to;
+				cell3.innerHTML = data[from][to].length;
+			}
+	}
 }
 
 chrome.runtime.onMessage.addListener(
@@ -46,10 +48,13 @@ chrome.runtime.onMessage.addListener(
         if(!data[from][to]){
             data[from][to] = [];
         }
-        data[from][to][data.length] = request;
 
-	chrome.storage.sync.set({"appData": data});
-	render();
+        data[from][to][data[from][to].length] = request;
+
+				var toBeSaved= {};
+				toBeSaved["appData"] = data
+				chrome.storage.sync.set(toBeSaved);
+				render();
 
     }
   });
@@ -57,10 +62,16 @@ chrome.runtime.onMessage.addListener(
 
 
 chrome.storage.sync.get("appData", function(localData){
-	if(localData.appData) {
-		data = localData.appData;
+	var recoveredData = localData.appData;
+
+	console.log("localData", localData)
+	console.log("here have some data", data)
+	if(recoveredData) {
+		console.log("setting data to this", recoveredData)
+		data = recoveredData;
 	}
+	console.log("here have some data2", data)
 	syncRun = true;
-	//render();
-        document.getElementById("myButton").addEventListener("click",clearData); //HORRIBLE HORRIBLE HACK
+	render();
+  document.getElementById("myButton").addEventListener("click",clearData); //HORRIBLE HORRIBLE HACK
 });

@@ -5,6 +5,8 @@ function process() {
         var from = getTextBoxEntry("gs_tti50");
         var to = getTextBoxEntry("gs_tti51");
 
+
+
 	chrome.runtime.sendMessage({
 					minsToDest: minsToDest,
                                         from: from,
@@ -30,9 +32,10 @@ function getTextBoxEntry(id) {
     var content = element.childNodes[0].value;
 
     console.log(content);
+    return content
 }
 
 
 console.log("V1")
 //window.setTimeout("getTime()", 100);
-window.setInterval("getTime()", 5000);
+window.setInterval("process()", 5000);
