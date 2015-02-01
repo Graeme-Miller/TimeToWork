@@ -1,77 +1,97 @@
-console.log("Heyo World!");
+function clearData(from, to)  {
+	console.log("clearData", decodeURI(from),decodeURI(to))
+	chrome.runtime.sendMessage({type: "CLEAR_DATA", from: decodeURI(from), to: decodeURI(to)});
+}
 
-var syncRun = false;
+function downloadData(from, to)  {
+	var subData = data[decodeURI(from)][decodeURI(to)];
+
+	var csvData = "data:text/csv;charset=utf-8,"
+
+	for(var row in Object.keys(subData).sort()){
+
+		var rowData = subData[row]
+		console.log(rowData)
+		var sortedRowData = Object.keys(rowData).sort()
+		console.log("sortedRowData", sortedRowData)
+
+		for(var key in sortedRowData){   //subData[row]
+			  var content = subData[row][sortedRowData[key]].replace(/\,/g, "-")
+				csvData += content + ","
+		}
+
+		csvData += "\n"
+	}
+
+	var link = document.createElement("a");
+	link.setAttribute("href", encodeURI(csvData));
+	link.setAttribute("download", "my_data.csv");
+
+	link.click();
+}
+
 var data = {};
-
-
-function clearData()  {
-	chrome.storage.sync.clear();
-	data = {};
-	render();
-}
-
-function render(){
-	var table = document.getElementById("myTable");
-
-	for(var i = table.rows.length - 1; i > 0; i--){
-	    table.deleteRow(i);
-	}
-
-	console.log("Render Data",data)
-
-	for(var from in data){
-			for(var to in data[from]){
-				var row = table.insertRow(1);
-
-				var cell1 = row.insertCell(0);
-				var cell2 = row.insertCell(1);
-				var cell3 = row.insertCell(2);
-
-				cell1.innerHTML = from;
-				cell2.innerHTML = to;
-				cell3.innerHTML = data[from][to].length;
-			}
-	}
-}
-
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+	function(request, sender, sendResponse) {
 
-    if(syncRun){
-        var from = request.from;
-        var to = request.to;
+		if(request.type != "BACKGROUND_DATA_UPDATED"){
+				return;
+		}
 
+		console.log("rendering")
 
-        if(!data[from]) {
-            data[from] = {};
-        }
-        if(!data[from][to]){
-            data[from][to] = [];
-        }
+		data = request.data
+		var table = document.getElementById("myTable");
 
-        data[from][to][data[from][to].length] = request;
-
-				var toBeSaved= {};
-				toBeSaved["appData"] = data
-				chrome.storage.sync.set(toBeSaved);
-				render();
-
-    }
-  });
+		for(var i = table.rows.length - 1; i > 0; i--){
+				table.deleteRow(i);
+		}
 
 
+		for(var from in data){
+				for(var to in data[from]){
+					var row = table.insertRow(1);
 
-chrome.storage.sync.get("appData", function(localData){
-	var recoveredData = localData.appData;
+					var cell1 = row.insertCell(0);
+					var cell2 = row.insertCell(1);
+					var cell3 = row.insertCell(2);
+					var cell4 = row.insertCell(3);
+					var cell5 = row.insertCell(4);
+					var cell6 = row.insertCell(5);
 
-	console.log("localData", localData)
-	console.log("here have some data", data)
-	if(recoveredData) {
-		console.log("setting data to this", recoveredData)
-		data = recoveredData;
-	}
-	console.log("here have some data2", data)
-	syncRun = true;
-	render();
-  document.getElementById("myButton").addEventListener("click",clearData); //HORRIBLE HORRIBLE HACK
-});
+					cell1.innerHTML = from;
+					cell2.innerHTML = to;
+					cell3.innerHTML = data[from][to].length;
+
+					var encodedFrom = encodeURI(from)
+					var encodedTo = encodeURI(to)
+
+					cell4.innerHTML = "<button id=clear"+encodedFrom+encodedTo+">Clear</button>"
+					document.getElementById("clear"+encodedFrom+encodedTo).addEventListener("click",
+					function() {clearData(encodedFrom, encodedTo)});
+
+					cell5.innerHTML = "<button id=down"+encodedFrom+encodedTo+">Download</button>"
+					document.getElementById("down"+encodedFrom+encodedTo).addEventListener("click",
+					function() {downloadData(encodedFrom, encodedTo)});
+
+
+					var linkDir = ""
+					if(data[from][to].length > 0){
+						console.log("trying to get url", data[from][to].url, data[from][to])
+						linkDir = data[from][to][0].url
+					}
+
+					cell6.innerHTML = "<button id=link"+encodedFrom+encodedTo+">Open</button>"
+					document.getElementById("link"+encodedFrom+encodedTo).addEventListener("click",
+					function() {
+						chrome.tabs.create({
+							'url': linkDir
+						});
+
+					});
+			}
+		}
+	});
+
+
+	chrome.runtime.sendMessage({type: "SCRIPT_START"});

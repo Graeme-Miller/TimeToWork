@@ -8,14 +8,16 @@ function process() {
 
 
 	chrome.runtime.sendMessage({
+          type: "TIME_TO_DEST",
 					minsToDest: minsToDest,
-                                        from: from,
-                                        to: to,
+          from: from,
+          to: to,
+          url: document.URL,
 					date: date.toLocaleString()
 				});
 	console.log("Message sent");
 
-	//location.reload();
+	location.reload();
 }
 
 function getTime() {
@@ -35,7 +37,4 @@ function getTextBoxEntry(id) {
     return content
 }
 
-
-console.log("V1")
-//window.setTimeout("getTime()", 100);
-window.setInterval("process()", 5000);
+window.setInterval("process()", 2500);

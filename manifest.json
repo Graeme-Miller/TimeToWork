@@ -10,12 +10,14 @@
     "default_popup": "mypage.html"
   },
 
-  "permissions": ["storage"],
- 
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["storage", "unlimitedStorage", "tabs"],
   "content_scripts": [
     {
       "matches": ["https://www.google.co.uk/maps*"],
       "js": ["contentscript.js"]
     }
-  ] 
+  ]
 }
