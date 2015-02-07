@@ -59,6 +59,7 @@ chrome.runtime.onMessage.addListener(
 					var cell5 = row.insertCell(4);
 					var cell6 = row.insertCell(5);
 					var cell7 = row.insertCell(6);
+					var cell8 = row.insertCell(7);
 
 					cell1.innerHTML = from;
 					cell2.innerHTML = to;
@@ -91,7 +92,7 @@ chrome.runtime.onMessage.addListener(
 
 					});
 
-					cell7.innerHTML = "<button id=display"+encodedFrom+encodedTo+">Display</button>"
+					cell7.innerHTML = "<button id=display"+encodedFrom+encodedTo+">Display by Day</button>"
 					document.getElementById("display"+encodedFrom+encodedTo).addEventListener("click",
 					function() {
 						chrome.tabs.create({
@@ -99,6 +100,17 @@ chrome.runtime.onMessage.addListener(
 						});
 
 						chrome.runtime.sendMessage({type: "DISPLAY_START", data: data[from][to]});
+
+					});
+
+					cell8.innerHTML = "<button id=displayAll"+encodedFrom+encodedTo+">Display All</button>"
+					document.getElementById("displayAll"+encodedFrom+encodedTo).addEventListener("click",
+					function() {
+						chrome.tabs.create({
+							'url': 'displayAll.html'
+						});
+
+						chrome.runtime.sendMessage({type: "DISPLAY_ALL_START", data: data[from][to]});
 
 					});
 			}
