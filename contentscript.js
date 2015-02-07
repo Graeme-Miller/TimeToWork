@@ -2,8 +2,8 @@ function process() {
     	var minsToDest = getTime();
         var date = Date();
 
-        var from = getTextBoxEntry("gs_tti50");
-        var to = getTextBoxEntry("gs_tti51");
+        var from = getTextBoxEntry("sb_ifc50");
+        var to = getTextBoxEntry("sb_ifc51");
 
 
 
@@ -37,4 +37,4 @@ function getTextBoxEntry(id) {
     return content
 }
 
-window.setInterval("process()", 2500);
+window.setInterval("process()", 30000);

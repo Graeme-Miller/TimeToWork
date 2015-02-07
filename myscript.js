@@ -58,6 +58,7 @@ chrome.runtime.onMessage.addListener(
 					var cell4 = row.insertCell(3);
 					var cell5 = row.insertCell(4);
 					var cell6 = row.insertCell(5);
+					var cell7 = row.insertCell(6);
 
 					cell1.innerHTML = from;
 					cell2.innerHTML = to;
@@ -87,6 +88,17 @@ chrome.runtime.onMessage.addListener(
 						chrome.tabs.create({
 							'url': linkDir
 						});
+
+					});
+
+					cell7.innerHTML = "<button id=display"+encodedFrom+encodedTo+">Display</button>"
+					document.getElementById("display"+encodedFrom+encodedTo).addEventListener("click",
+					function() {
+						chrome.tabs.create({
+							'url': 'display.html'
+						});
+
+						chrome.runtime.sendMessage({type: "DISPLAY_START", data: data[from][to]});
 
 					});
 			}
