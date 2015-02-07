@@ -75,17 +75,7 @@ function drawChart(data) {
     hAxis: {title: 'Time of Day'},
     vAxis: {title: 'Time'},
     pointSize: '3',
-    legend: {position: 'right', textStyle: {color: 'black', fontSize: 16}},
-    trendlines: {
-          3: {
-            type: 'polynomial',
-            degree: 10,
-            lineWidth: 3,
-            opacity: 0.3,
-            showR2: true,
-            visibleInLegend: true
-          }
-        }
+    legend: {position: 'right', textStyle: {color: 'black', fontSize: 16}}
   };
 
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
