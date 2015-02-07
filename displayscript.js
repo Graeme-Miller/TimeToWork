@@ -27,7 +27,7 @@ function convertData(data){
     var min = parseInt(date.substring(19,21))
     var sec = parseInt(date.substring(22,24))
 
-    var row = [[hour, min ,sec], 1, 1, 1, 1, 1, 1, 1]
+    var row = [[hour, min ,sec], null, null, null, null, null, null, null]
 
 
 
@@ -43,7 +43,6 @@ function convertData(data){
         default: continue;
     }
 
-    console.log(hour, min, sec, date)
     row[dayIndex] = minsToDest
     result[result.length] = row
   }
@@ -56,10 +55,20 @@ function convertData(data){
 function drawChart(data) {
   var convertedData = convertData(data)
 
-
-  var data2 = google.visualization.arrayToDataTable(convertedData,
-        true);
-
+  console.log("a")
+  var data2 = new google.visualization.DataTable();
+  console.log("b")
+  data2.addColumn('timeofday', 'Time');
+  data2.addColumn('number', 'Monday');
+  data2.addColumn('number', 'Tuesday');
+  data2.addColumn('number', 'Wednessday');
+  data2.addColumn('number', 'Thursday');
+  data2.addColumn('number', 'Friday');
+  data2.addColumn('number', 'Saturday');
+  data2.addColumn('number', 'Sunday');
+  console.log("c")
+  data2.addRows(convertedData);
+  console.log("d")
 
   var options = {
     title: 'Drive Time',
@@ -69,6 +78,6 @@ function drawChart(data) {
   };
 
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
-
+  console.log("e")
   chart.draw(data2, options);
 }
